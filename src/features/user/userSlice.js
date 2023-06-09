@@ -10,6 +10,7 @@ import {
 
 const initialState = {
   isLoading: false,
+  isSidebarOpen: false,
   user: getUserFromLocalStorage(),
 };
 
@@ -37,39 +38,50 @@ export const loginUser = createAsyncThunk(
 });
 
   const userSlice = createSlice({
-   name:'user',
-   initialState,
-   extraReducers: {
-    [registerUser.pending]: (state) => {
-      state.isLoading = true;
+    name: "user",
+    initialState,
+    reducers: { 
+      toggleSidebar: (state) => {
+        state.isSidebarOpen = !state.isSidebarOpen;
+      },
+      logoutUser: (state) => {
+        state.user = null;
+        state.isSidebarOpen = false;
+        removeUserFromLocalStorage();
+      },
+      
     },
-    [registerUser.fulfilled]: (state, { payload }) => {
-      const { user } = payload;
-      state.isLoading = false;
-      state.user = user;
-      addUserToLocalStorage(user)
-      toast.success(`Hello There ${user.name}`);
+    extraReducers: {
+      [registerUser.pending]: (state) => {
+        state.isLoading = true;
+      },
+      [registerUser.fulfilled]: (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+        toast.success(`Hello There ${user.name}`);
+      },
+      [registerUser.rejected]: (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      },
+      [loginUser.pending]: (state) => {
+        state.isLoading = true;
+      },
+      [loginUser.fulfilled]: (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+        toast.success(`You're back! Welcome ${user.name}`);
+      },
+      [loginUser.rejected]: (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      },
     },
-    [registerUser.rejected]: (state, { payload }) => {
-      state.isLoading = false;
-      toast.error(payload);
-    },
-    [loginUser.pending]: (state) => {
-      state.isLoading = true;
-    },
-    [loginUser.fulfilled]: (state, { payload }) => {
-      const { user } = payload;
-      state.isLoading = false;
-      state.user = user;
-      addUserToLocalStorage(user);
-      toast.success(`You're back! Welcome ${user.name}`);
-    },
-    [loginUser.rejected]: (state, { payload }) => {
-      state.isLoading = false;
-      toast.error(payload);
-    },
-  },
-  
-});
+  });
 
+export const { toggleSidebar, logoutUser } = userSlice.actions;
 export default userSlice.reducer;
