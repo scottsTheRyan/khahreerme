@@ -1,4 +1,3 @@
-
 import main from '../assets/images/main.svg';
 import style from 'styled-components';
 import Wrapper from '../assets/wrappers/LandingPage';
