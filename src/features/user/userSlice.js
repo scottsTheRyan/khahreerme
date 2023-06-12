@@ -48,6 +48,7 @@ const userSlice = createSlice({
         state.user = null;
         state.isSidebarOpen = false;
         removeUserFromLocalStorage();
+        
       },
     },
 
